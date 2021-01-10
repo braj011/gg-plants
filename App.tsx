@@ -8,7 +8,7 @@
  * @format
  */
 
-import React, {useRef} from 'react';
+import React, {useRef, createRef} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -20,6 +20,7 @@ import {
   StatusBar,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import ActionSheet from 'react-native-actionsheet';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faCamera} from '@fortawesome/free-solid-svg-icons';
 
@@ -27,19 +28,57 @@ import {Header} from './src/components/Header/Header';
 
 declare const global: {HermesInternal: null | {}};
 
+const actionSheetRef = createRef();
+
+const CAMERA_OPTION_SHEET_OPTIONS = [
+  'Camera',
+  'Upload an existing image',
+  'Cancel',
+];
+
 const App = () => {
-  const cameraOpen = () => console.log('open the camera');
+  // const cameraOpen = () => console.log('open the camera');
+  const refActionSheet = useRef<ActionSheet>(null);
+
+  const showActionSheet = () => {
+    if (refActionSheet.current) {
+      refActionSheet.current.show();
+    }
+  };
   return (
     <>
       <Header header="Gol Gol Plants" />
       <View>
-        <TouchableOpacity style={styles.camContainer} onPress={cameraOpen}>
+        <TouchableOpacity
+          style={styles.camContainer}
+          onPress={() => showActionSheet()}>
           <FontAwesomeIcon
             icon={faCamera}
             size={50}
             style={styles.cameraIcon}
           />
         </TouchableOpacity>
+        <ActionSheet
+          ref={refActionSheet}
+          title={'How would you like to pick a plant photo?'}
+          options={CAMERA_OPTION_SHEET_OPTIONS}
+          onPress={(buttonIndex: number) => {
+            switch (buttonIndex) {
+              case 0:
+                console.log('CAMERA SELECTED');
+                break;
+              case 1:
+                console.log('IMAGE UPLOAD SELECTED');
+                break;
+              default:
+                break;
+            }
+          }}
+          cancelButtonIndex={2}>
+          <View>
+            <Text>YOUR CUSTOM COMPONENT INSIDE THE ACTIONSHEET</Text>
+          </View>
+        </ActionSheet>
       </View>
     </>
   );
